@@ -24,7 +24,7 @@ if(x > 10)
 }
 ```
 
-#### Q1.1 
+#### Q1.1
 
 ```         
 [1] "11 is greater than 10"
@@ -132,7 +132,7 @@ library(tidyverse)
 
 Stress was measured by observing the amount of glucocorticoid metabolite present in pika feces. The stress variable is called "concentration_pg_m" and it's in picograms GCM/gram of dry pika feces.
 
-#### Q1.4 
+#### Q1.4
 
 A row represents a observation of individual pika poop, collected between June and September of 2018.
 
@@ -172,7 +172,7 @@ head(nwt_pikas_categ %>% select(-c(utm_easting, utm_northing)))
 
 ```
 
-#### Q1.5 
+#### Q1.5
 
 ```{r}
 # Make a scatterplot with jittered points
@@ -221,7 +221,7 @@ nwt_pikas_summerstress %>%
   geom_jitter(width = 0.1)
 ```
 
-#### Q2.1 
+#### Q2.1
 
 We're using the palmerpenguins data set.
 
@@ -233,36 +233,72 @@ penguins <- penguins
 
 #### Q2.2
 
-For our for loop we want it to read the species column from penguins and return the unique species names in a vector. The for loop is going to iterate the across the species names in the vector giving us a unique plot for each species.
+For our for loop we want it to read the species column from penguins and return the unique species names in a vector. Then, the for loop is going to iterate the across the species names in the vector giving us a unique plot for each species.
 
 #### Q2.3
 
 ```{r}
-# Store a vector of unique species names from the Species column of Iris
+#| warning: false
+#| message: false
+
+# Store a vector of unique species names from the Species column of species in the penguins dataframe.
 peng_names <- unique(penguins$species)
 
-# We are making 
+# We are making a for loop across the species names in the peng_names vetor
 for (i in 1:length(peng_names)) {
-  
+  #this ine filters data for the interated species
   filt_data <- penguins %>% 
-    # 
     filter(species == peng_names[i])
   
-  # 
+  # These ggpolt lines plot a scatter plot with a lm line.
   plot <- filt_data %>% 
-    # 
     ggplot(aes(x = flipper_length_mm,
                y = body_mass_g)) +
-    # 
     geom_point() +
-    # 
     geom_smooth(method = "lm") +
-    # 
-   
+    # This adds a title pasting in "Species and the interated species name
     ggtitle(paste("Species:", peng_names[i]))
   
-  # 
+  # this displays the plot(s)
   print(plot)
 }
-head(penguins)
+```
+
+#### Q 2.4
+
+If flipper length is \>=200, label as Big Ass Penguin and display points as different color in the ggplots
+
+#### Q 2.5
+
+```{r}
+penguins <- penguins %>% 
+  # Call the new column BAP
+  mutate(BAP = case_when(
+    # When the value is > 200, make the new column's value "BigAssPenguin"
+    flipper_length_mm > 200 ~ "BigAssPenguin",
+    # Otherwise, make the new column's value "Tinys"
+    .default = "Tinys"
+  ))
+```
+
+```{r}
+# We are making a for loop across the species names in the peng_names vetor
+for (i in 1:length(peng_names)) {
+  #this ine filters data for the interated species
+  filt_data <- penguins %>% 
+    filter(species == peng_names[i])
+  
+  # These ggpolt lines plot a scatter plot with a lm line.
+  plot <- filt_data %>% 
+    ggplot(aes(x = flipper_length_mm,
+               y = body_mass_g)) +
+    #coloring points by BAP category
+    geom_point(aes(color=BAP)) +
+    geom_smooth(method = "lm") +
+    # This adds a title pasting in "Species and the interated species name
+    ggtitle(paste("Species:", peng_names[i]))
+  
+  # this displays the plot(s)
+  print(plot)
+}
 ```
