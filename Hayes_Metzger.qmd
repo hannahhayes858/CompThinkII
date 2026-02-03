@@ -1,0 +1,268 @@
+---
+title: "Hayes_Metzger"
+date: 2026-02-02
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+```{r}
+x <-11
+
+# Check if the value of x is greater than 10
+if(x > 10)
+{ 
+  # Paste takes the value stored in x and combines that with a character string
+  print(paste(x, "is greater than 10")) 
+} else
+{ 
+  print(paste(x, "is less than or equal to 10")) 
+}
+```
+
+#### Q1.1 
+
+```         
+[1] "11 is greater than 10"
+```
+
+```{r eval = FALSE}
+x <- "five"
+
+# Check if the value of x is greater than 10
+if(x > 10)
+{ 
+  # If x is > 10, multiple x by 2
+  print(x*2)
+} else
+{ 
+  # If x is not > 10, divide x by 2  
+  print(x/2) 
+}
+```
+
+```{r eval = FALSE, echo = FALSE}
+traceback()
+```
+
+```{r}
+# define a variable
+x <- 11
+
+# check the value of x using nested if-else statements
+if (x < 10) {
+  # if x is less than 10
+  print("x is less than 10")
+} else {
+  # if x is exactly equal to 10
+  if (x == 10) {
+    print("x is 10!!!")
+  } else {
+    # if x is greater than 10
+    print("x is greater than 10")
+  }
+}
+
+```
+
+```{r}
+vec <- c(9, 10, 11, 12)
+```
+
+```{r}
+# For 1 through the length of the vector "vec" 
+for (i in 1:length(vec)) {
+  
+  # check the value of using nested if-else statements
+  if (vec[i] < 10) {
+    # if the element is less than 10
+    print("value is less than 10")
+  } else {
+    # if the element is exactly equal to 10
+    if (vec[i] == 10) {
+      # if the element equals 10
+      print("value is 10!!!")
+    } else {
+      # if the element is greater than 10
+      print("value is greater than 10")
+    }
+  }
+  
+}
+
+```
+
+#### Q.1.2
+
+```{r}
+#First we're going to make a vector = y
+y <- c(-2, 42, 0, 10)
+
+# For 1 through the length of the vector "vec" 
+for (i in 1:length(y)) {
+  
+  # check the value of using nested if-else statements
+  if (y[i] < 0) {
+    # if the element is less than 10
+    print("value is Negative :(")
+  } else {
+    # if the element is exactly equal to 10
+    if (y[i] == 0) {
+      # if the element equals 10
+      print("value is 0 my hero!!!")
+    } else {
+      # if the element is greater than 10
+      print("value is 10 or the answer to life and the unviverse and everything #slay")
+    }
+  }
+  
+}
+```
+
+```{r}
+library(lterdatasampler)
+library(tidyverse)
+```
+
+#### Q1.3
+
+Stress was measured by observing the amount of glucocorticoid metabolite present in pika feces. The stress variable is called "concentration_pg_m" and it's in picograms GCM/gram of dry pika feces.
+
+#### Q1.4 
+
+A row represents a observation of individual pika poop, collected between June and September of 2018.
+
+```{r}
+# Make a histogram
+nwt_pikas %>% 
+  ggplot(aes(x = concentration_pg_g)) +
+  # Add the histogram geom, which only needs an x-axis
+  # Choose a binwidth of 500 picogram GCM/gram
+  geom_histogram(binwidth = 500,
+                 fill = "white",
+                 color = "black")
+```
+
+```{r}
+# Make a scatterplot with jittered points
+nwt_pikas %>% 
+  # We're adding a little placeholder axis just so we can see the point distribution
+  ggplot(aes(x ="Placeholder", 
+             y = concentration_pg_g)) +
+  # Add the geom_jitter geom
+  geom_jitter(width = 0.1)
+```
+
+```{r}
+nwt_pikas_categ <- nwt_pikas %>% 
+  # Call the new column stress_category
+  mutate(stress_category = case_when(
+    # When the value is > 5000, make the new column's value "Stressed!!!!"
+    concentration_pg_g > 5000 ~ "Stressed!!!!!!",
+    # Otherwise, make the new column's value "Chill"
+    .default = "Chill"
+  ))
+
+# Check out the first 6 rows, but remove the utm columns just for visibility
+head(nwt_pikas_categ %>% select(-c(utm_easting, utm_northing)))
+
+```
+
+#### Q1.5 
+
+```{r}
+# Make a scatterplot with jittered points
+nwt_pikas_categ %>% 
+  # We're adding a little placeholder axis just so we can see the point distribution
+  ggplot(aes(x ="Placeholder", 
+             y = concentration_pg_g, 
+             color = stress_category)) +
+  # Add the geom_jitter geom
+  geom_jitter(width = 0.1)
+```
+
+```{r}
+nwt_pikas_categ2 <- nwt_pikas_categ %>% 
+  # Create a new column called month
+  # then, extract the month from the date using the month() function
+  mutate(month = month(date)) %>% 
+  # Lastly, relocate the month column after the date column so it's more easily visible to us
+  relocate(month, .after = date)
+
+head(nwt_pikas_categ2)
+```
+
+```{r}
+nwt_pikas_summerstress <- nwt_pikas_categ2 %>% 
+  mutate(summer_stress_category = case_when(
+    (month == 6 | month == 7) & concentration_pg_g > 5000 ~ "Early summer stress",
+    (month == 6 | month == 7) & concentration_pg_g <= 5000 ~ "Early summer chill",
+    (month == 8 | month == 9) & concentration_pg_g > 5000 ~ "Late summer stress",
+    (month == 8 | month == 9) & concentration_pg_g <= 5000 ~ "Late summer chill",
+    .default = "NA"
+  ))
+
+head(nwt_pikas_summerstress)
+
+```
+
+```{r}
+# Make a scatterplot with jittered points
+nwt_pikas_summerstress %>% 
+  # We're adding a little placeholder axis just so we can see the point distribution
+  ggplot(aes(x = month, 
+             y = concentration_pg_g,
+             color = summer_stress_category)) +
+  # Add the geom_jitter geom
+  geom_jitter(width = 0.1)
+```
+
+#### Q2.1 
+
+We're using the palmerpenguins data set.
+
+```{r}
+#We are loading the library and then reading in penguins as penguins
+library(palmerpenguins)
+penguins <- penguins
+```
+
+#### Q2.2
+
+For our for loop we want it to read the species column from penguins and return the unique species names in a vector. The for loop is going to iterate the across the species names in the vector giving us a unique plot for each species.
+
+#### Q2.3
+
+```{r}
+# Store a vector of unique species names from the Species column of Iris
+peng_names <- unique(penguins$species)
+
+# We are making 
+for (i in 1:length(peng_names)) {
+  
+  filt_data <- penguins %>% 
+    # 
+    filter(species == peng_names[i])
+  
+  # 
+  plot <- filt_data %>% 
+    # 
+    ggplot(aes(x = flipper_length_mm,
+               y = body_mass_g)) +
+    # 
+    geom_point() +
+    # 
+    geom_smooth(method = "lm") +
+    # 
+   
+    ggtitle(paste("Species:", peng_names[i]))
+  
+  # 
+  print(plot)
+}
+head(penguins)
+```
